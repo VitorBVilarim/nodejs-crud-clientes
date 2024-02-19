@@ -48,12 +48,12 @@ export async function atualizarDadosCliente(req, res) {
     const { id } = req.params
     const { nome, telefone, cpf, email, cep, rua, cidade, estado } = req.body
     try {
-        const verificEmailExistente = await conexaoDb('clientes').select().where({ email: email }).first()
+        const verificEmailExistente = await conexaoDb('clientes').select().where({ email: email }).whereNot('id', id).first()
         if (verificEmailExistente) {
             return res.status(400).json({ message: 'Este email já esta em uso por outro cliente!' })
         }
 
-        const verificCpfExistente = await conexaoDb('clientes').select().where({ cpf: cpf }).first()
+        const verificCpfExistente = await conexaoDb('clientes').select().where({ cpf: cpf }).whereNot('id', id).first()
         if (verificCpfExistente) {
             return res.status(400).json({ message: 'Este cpf já está em uso.' })
         }
@@ -71,6 +71,7 @@ export async function atualizarDadosCliente(req, res) {
         return res.status(200).json(clienteAtualizado[0])
 
     } catch (error) {
+
         return res.status(500).json({ message: 'Erro interno no servidor' })
     }
 }
